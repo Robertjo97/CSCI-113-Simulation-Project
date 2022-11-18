@@ -3,13 +3,13 @@
 #include <fstream>
 #include <string>
 
+using namespace std;
+
 struct cache_block {
 	bool valid_bit;
 	vector <int> tag;
 	vector <int> data;
 };
-
-using namespace std;
 
 int main() {
 	string instruction;
