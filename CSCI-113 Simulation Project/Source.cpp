@@ -11,20 +11,31 @@ struct cache_block {
 	vector <int> data;
 };
 
+struct memory_block {
+	vector<int> block;
+};
+
 int main() {
-	vector <cache_block> cache(16);
+	vector <cache_block> cache;
+	cache.reserve(16);
 	string line;
 	ifstream file;
-	vector<int> test;
+	vector<int> instruction;
 
 	file.open("02-Input-object-code");
-	getline(file, line);
-	for (int i = 0; i < 32; i++) {
-		test.push_back(line[i] - '0');
+	while (!file.eof()) {
+		getline(file, line);
+		for (int i = 0; i < 32; i++) {
+			instruction.push_back(line[i] - '0');
+		}
 	}
-	for (int i = 0; i < test.size(); i++) {
-		cout << test.at(i);
+	vector <memory_block> main_memory;
+	main_memory.reserve(128);
+	for (int i = 0; i < main_memory.size(); i++) {
+		main_memory.at(i).block.reserve(7);
 	}
+	
+
 	/*cout << line[0];
 	int n = line[0] - '0';
 	cout << n;
