@@ -32,7 +32,7 @@ int main() {
 	vector <memory_block> main_memory;
 	main_memory.reserve(128);
 	for (int i = 0; i < main_memory.size(); i++) {
-		main_memory.at(i).block.reserve(7);
+		main_memory.at(i).block.reserve(32);
 	}
 	
 
