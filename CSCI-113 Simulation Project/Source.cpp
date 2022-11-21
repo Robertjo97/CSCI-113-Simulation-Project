@@ -78,9 +78,17 @@ instruction decode(string instr) {
 	instruction_decoded.rt = binaryToDecimal(stoi(rt));
 	instruction_decoded.offset = binaryToDecimal(stoi(offset));
 
+	cout << instruction_decoded.op << endl;
+	cout << instruction_decoded.rs << endl;
+	cout << instruction_decoded.rt << endl;
+	cout << instruction_decoded.offset << endl;
+	cout << endl;
+
 	return instruction_decoded;
 
 }
+
+
 
 int main() {
 	cache cache;
