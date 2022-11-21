@@ -33,6 +33,15 @@ int main() {
 
 	vector <memory_block> memory;
 	memory.reserve(128);
+	for (int i = 0; i < 128; i++) {
+		memory_block memblock;
+		memblock.address = i;
+
+		memory.push_back(memblock);
+	}
+	/*for (int i = 0; i < memory.size(); i++) {
+		cout << memory.at(i).address << "    " << memory.at(i).data << endl;
+	}*/
 
 	vector <reg_block> reg_file;
 	reg_file.reserve(8);
@@ -41,9 +50,9 @@ int main() {
 		block.name = i;
 		reg_file.push_back(block);
 	}
-	for (int i = 0; i < reg_file.size(); i++) {
+	/*for (int i = 0; i < reg_file.size(); i++) {
 		cout << "$S" << reg_file.at(i).name << "    " << reg_file.at(i).data << endl;
-	}
+	}*/
 
 	string line;
 	ifstream file;
