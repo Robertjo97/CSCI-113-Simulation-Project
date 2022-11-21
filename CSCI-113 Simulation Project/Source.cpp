@@ -27,6 +27,17 @@ struct reg_block {
 	int data = 0;
 };
 
+struct instruction {
+	vector <int> op;
+	vector <int> rs;
+	vector <int> rt;
+	vector <int> offset;
+};
+
+/*instruction decode(vector <int> instruction) {
+
+}*/
+
 int main() {
 	cache cache;
 	cache.block_0.reserve(8);
@@ -70,29 +81,15 @@ int main() {
 
 	string line;
 	ifstream file;
-	vector<int> instruction;
-
-	/*file.open("02-Input-object-code");
+	
+	file.open("02-Input-object-code");
 	while (!file.eof()) {
+		vector<int> instruction;
 		getline(file, line);
 		for (int i = 0; i < 32; i++) {
 			instruction.push_back(line[i] - '0');
-			cout << line[i];
 		}
-		cout << endl;
-		
 	}
-	
 
-	/*cout << line[0];
-	int n = line[0] - '0';
-	cout << n;
-	while (!file.eof()) {
-		
-		
-	}
-	file.close();*/
-
-	
 	return 0;
 }
