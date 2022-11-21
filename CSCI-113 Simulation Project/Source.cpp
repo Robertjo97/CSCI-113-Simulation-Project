@@ -49,6 +49,7 @@ int main() {
 	for (int i = 0; i < 128; i++) {
 		memory_block memblock;
 		memblock.address = i;
+		memblock.data = i + 5;
 
 		memory.push_back(memblock);
 	}
