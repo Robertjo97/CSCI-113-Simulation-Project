@@ -17,12 +17,12 @@ struct cache {
 };
 
 struct memory_block {
-	int address;
+	int address = 0;
 	int data = 0;
 };
 
 struct reg_block {
-	int name;
+	int name = 0;
 	int data = 0;
 };
 
@@ -38,19 +38,18 @@ int main() {
 	reg_file.reserve(8);
 	for (int i = 0; i < 8; i++) {
 		reg_block block;
-		//block.data = 0;
 		block.name = i;
 		reg_file.push_back(block);
 	}
 	for (int i = 0; i < reg_file.size(); i++) {
-		cout << "$s" << reg_file.at(i).name << "    " << reg_file.at(i).data << endl;
+		cout << "$S" << reg_file.at(i).name << "    " << reg_file.at(i).data << endl;
 	}
 
 	string line;
 	ifstream file;
 	vector<int> instruction;
 
-	file.open("02-Input-object-code");
+	/*file.open("02-Input-object-code");
 	while (!file.eof()) {
 		getline(file, line);
 		for (int i = 0; i < 32; i++) {
