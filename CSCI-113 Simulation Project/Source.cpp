@@ -28,15 +28,59 @@ struct reg_block {
 };
 
 struct instruction {
-	vector <int> op;
-	vector <int> rs;
-	vector <int> rt;
-	vector <int> offset;
+	int op = 0;
+	int rs = 0;
+	int rt = 0;
+	int offset = 0;
 };
 
-/*instruction decode(vector <int> instruction) {
+int binaryToDecimal(int n)
+{
+	int num = n;
+	int dec_value = 0;
 
-}*/
+	// Initializing base value to 1, i.e 2^0
+	int base = 1;
+
+	int temp = num;
+	while (temp) {
+		int last_digit = temp % 10;
+		temp = temp / 10;
+
+		dec_value += last_digit * base;
+
+		base = base * 2;
+	}
+
+	return dec_value;
+}
+
+instruction decode(string instr) {
+	instruction instruction_decoded;
+	string op = "";
+	string rs = "";
+	string rt = "";
+	string offset = "";
+	for (int i = 0; i < 6; i++) {
+		op += instr.at(i);
+	}
+	for (int i = 6; i < 11; i++) {
+		rs += instr.at(i);
+	}
+	for (int i = 11; i < 16; i++) {
+		rt += instr.at(i);
+	}
+	for (int i = 16; i < 32; i++) {
+		offset += instr.at(i);
+	}
+	instruction_decoded.op = binaryToDecimal(stoi(op));
+	instruction_decoded.rs = binaryToDecimal(stoi(rs));
+	instruction_decoded.rt = binaryToDecimal(stoi(rt));
+	instruction_decoded.offset = binaryToDecimal(stoi(offset));
+
+	return instruction_decoded;
+
+}
 
 int main() {
 	cache cache;
@@ -84,11 +128,8 @@ int main() {
 	
 	file.open("02-Input-object-code");
 	while (!file.eof()) {
-		vector<int> instruction;
 		getline(file, line);
-		for (int i = 0; i < 32; i++) {
-			instruction.push_back(line[i] - '0');
-		}
+		decode(line);
 	}
 
 	return 0;
