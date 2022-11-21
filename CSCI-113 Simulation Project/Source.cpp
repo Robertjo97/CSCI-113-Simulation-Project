@@ -6,6 +6,7 @@
 using namespace std;
 
 struct cache_block {
+	int set = 0;
 	int valid_bit = 0;
 	int tag = 0;
 	int data = 0;
@@ -30,6 +31,18 @@ int main() {
 	cache cache;
 	cache.block_0.reserve(8);
 	cache.block_1.reserve(8);
+
+	for (int i = 0; i < 8; i++) {
+		cache_block block;
+		block.set = i;
+		cache.block_0.push_back(block);
+		cache.block_1.push_back(block);
+	}
+
+	/*for (int i = 0; i < cache.block_0.size(); i++) {
+		cout << cache.block_0.at(i).set << "    " << cache.block_0.at(i).valid_bit << "    " << cache.block_0.at(i).tag << "    " << cache.block_0.at(i).data << "          ";
+		cout << cache.block_1.at(i).set << "    " << cache.block_1.at(i).valid_bit << "    " << cache.block_1.at(i).tag << "    " << cache.block_1.at(i).data << "          " << endl;
+	}*/
 
 	vector <memory_block> memory;
 	memory.reserve(128);
