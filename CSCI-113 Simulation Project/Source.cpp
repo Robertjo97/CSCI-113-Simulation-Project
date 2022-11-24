@@ -35,6 +35,13 @@ struct instruction {
 	int offset = 0;
 };
 
+int compute_mem_addr(instruction instr) {
+	int byte_addr = instr.rs + instr.offset;
+	int word_addr = byte_addr / 4;
+	cout << "Word address: " << word_addr << endl;
+	return word_addr;
+}
+
 int binaryToDecimal(int n)
 {
 	int num = n;
@@ -52,6 +59,33 @@ int binaryToDecimal(int n)
 	}
 
 	return dec_value;
+}
+
+void load_operation(int memory_address, int rt, vector<reg_block> regs, cache cache, vector <memory_block> memory) {
+
+	int set = memory_address % 8;
+	int tag = memory_address / 8;
+
+	if (cache.block_0.at(set).valid_bit == 1 || cache.block_1.at(set).valid_bit == 1) {
+		if()
+	}
+
+
+	/*cout << "Set: " << set << endl;
+	cout << "Tag: " << tag << endl;
+	cout << "Rt value: " << rt << endl;
+	cout << "Register:  " << "$S" << rt - 16 << endl;*/
+
+
+}
+
+void store_operation(int memory_address, int rt, vector<reg_block> regs, cache cache, vector <memory_block> memory) {
+	int set = memory_address % 8;
+	int tag = memory_address / 8;
+	cout << "Set: " << set << endl;
+	cout << "Tag: " << tag << endl;
+	cout << "Rt value: " << rt << endl;
+	cout << "Register:  " << "$S" << rt - 16 << endl;
 }
 
 //void read_hit(); 
@@ -86,23 +120,28 @@ instruction decode(string instr) {
 	cout << instruction_decoded.rs << endl;
 	cout << instruction_decoded.rt << endl;
 	cout << instruction_decoded.offset << endl;
-	cout << endl;
+	//cout << endl;
 
 	return instruction_decoded;
-
 }
 
-void execute(instruction instr) {
+void execute(instruction instr, vector<reg_block> regs, cache cache, vector <memory_block> memory) {
+
 	if (instr.op == 35) {
-		//cout << "LW" << endl;
+		cout << "LW" << endl;
+		load_operation(compute_mem_addr(instr), instr.rt, regs, cache, memory);
+
 	}
 	else if (instr.op == 43) {
-		//cout << "SW" << endl;
+		cout << "SW" << endl;
+		store_operation(compute_mem_addr(instr), instr.rt, regs, cache, memory);
 	}
 	else {
-		//cout << "Error reading opcode" << endl;
+		cout << "Error reading opcode" << endl;
 	}
+	cout << endl;
 }
+
 
 
 
@@ -153,7 +192,7 @@ int main() {
 	file.open("02-Input-object-code");
 	while (!file.eof()) {
 		getline(file, line);
-		execute(decode(line));
+		execute(decode(line), reg_file, cache, memory);
 	}
 
 	return 0;
