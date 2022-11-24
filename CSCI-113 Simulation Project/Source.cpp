@@ -66,8 +66,37 @@ void load_operation(int memory_address, int rt, vector<reg_block> regs, cache ca
 	int set = memory_address % 8;
 	int tag = memory_address / 8;
 
-	if (cache.block_0.at(set).valid_bit == 1 || cache.block_1.at(set).valid_bit == 1) {
-		if()
+	if (cache.block_0.at(set).valid_bit == 1) {
+		if (cache.block_0.at(set).tag == tag) {
+			//read_hit();
+			cout << "read hit" << endl;
+		}
+		else if (cache.block_1.at(set).valid_bit == 1) {
+			if (cache.block_1.at(set).tag == tag) {
+				cout << "read hit" << endl;
+				//read_hit();
+			}
+			if (cache.block_1.at(set).tag != tag) {
+				//LRU stuff
+			}
+		}
+		else if (cache.block_1.at(set).valid_bit == 0) {
+			cout << "read miss" << endl;
+			//read_miss()
+			//write from mem at block_1;
+		}
+	}
+
+
+	else if (cache.block_0.at(set).valid_bit == 0) {
+		cout << "Miss" << endl;
+		//read_miss();
+		//write from mem at block_0;
+
+	}
+
+	else {
+		cout << "Error reading cache" << endl;
 	}
 
 
