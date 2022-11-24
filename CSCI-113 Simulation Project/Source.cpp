@@ -8,6 +8,7 @@ using namespace std;
 struct cache_block {
 	int set = 0;
 	int valid_bit = 0;
+	int history = 0;
 	int tag = 0;
 	int data = 0;
 };
@@ -38,8 +39,6 @@ int binaryToDecimal(int n)
 {
 	int num = n;
 	int dec_value = 0;
-
-	// Initializing base value to 1, i.e 2^0
 	int base = 1;
 
 	int temp = num;
@@ -54,6 +53,11 @@ int binaryToDecimal(int n)
 
 	return dec_value;
 }
+
+//void read_hit(); 
+//void read_miss();
+//void write_hit();  //WB
+//void write_miss(); //no-write-allocate
 
 instruction decode(string instr) {
 	instruction instruction_decoded;
@@ -86,6 +90,18 @@ instruction decode(string instr) {
 
 	return instruction_decoded;
 
+}
+
+void execute(instruction instr) {
+	if (instr.op == 35) {
+		//cout << "LW" << endl;
+	}
+	else if (instr.op == 43) {
+		//cout << "SW" << endl;
+	}
+	else {
+		//cout << "Error reading opcode" << endl;
+	}
 }
 
 
@@ -137,7 +153,7 @@ int main() {
 	file.open("02-Input-object-code");
 	while (!file.eof()) {
 		getline(file, line);
-		decode(line);
+		execute(decode(line));
 	}
 
 	return 0;
