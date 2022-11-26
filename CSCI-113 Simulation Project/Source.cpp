@@ -61,38 +61,64 @@ int binaryToDecimal(int n)
 	return dec_value;
 }
 
+
 void load_operation(int memory_address, int rt, vector<reg_block> regs, cache cache, vector <memory_block> memory) {
 
 	int set = memory_address % 8;
 	int tag = memory_address / 8;
 
-	if (cache.block_0.at(set).valid_bit == 1) {
+	if (cache.block_0.at(set).valid_bit == 1) {							//Case: block_0 [valid passed] [tag passed]
 		if (cache.block_0.at(set).tag == tag) {
-			//read_hit();
-			cout << "read hit" << endl;
+			regs.at(rt - 16).data = cache.block_0.at(set).data;
+			cache.block_0.at(set).history = 1;
+			cache.block_1.at(set).history = 0;
+			cout << "Read hit" << endl;
 		}
 		else if (cache.block_1.at(set).valid_bit == 1) {
-			if (cache.block_1.at(set).tag == tag) {
-				cout << "read hit" << endl;
+			if (cache.block_1.at(set).tag == tag) {						//Case: block_0 [valid passed] [tag failed] block_1 [valid passed] [tag passed]
+				cout << "Read hit" << endl;
+				regs.at(rt - 16).data = cache.block_1.at(set).data;
+				cache.block_1.at(set).history = 1;
+				cache.block_0.at(set).history = 0;
 				//read_hit();
 			}
-			if (cache.block_1.at(set).tag != tag) {
-				//LRU stuff
+			else if (cache.block_1.at(set).tag != tag) {						//Case: block_0 [valid passed] [tag failed] block_1 [valid passed] [tag failed]
+				cout << "Read miss" << endl;
+				if (cache.block_0.at(set).history == 0) {
+					cache.block_0.at(set).tag = tag;
+					cache.block_0.at(set).data = memory.at(memory_address).data;
+					regs.at(rt - 16).data = cache.block_0.at(set).data;
+					cache.block_0.at(set).history = 1;
+				}																	//LRU
+				else if (cache.block_1.at(set).history == 0) {
+					cache.block_1.at(set).tag = tag;
+					cache.block_1.at(set).data = memory.at(memory_address).data;
+					regs.at(rt - 16).data = cache.block_1.at(set).data;
+					cache.block_1.at(set).history = 1;
+				}
+				else {
+					cout << "Error reading history" << endl;
+				}
 			}
 		}
-		else if (cache.block_1.at(set).valid_bit == 0) {
-			cout << "read miss" << endl;
-			//read_miss()
-			//write from mem at block_1;
+
+			else if (cache.block_1.at(set).valid_bit == 0) {					//Case: block_0 [valid passed] [tag failed] block_1 [valid failed]
+			cout << "Read miss" << endl;
+			cache.block_1.at(set).valid_bit = 1;
+			cache.block_1.at(set).tag = tag;
+			cache.block_1.at(set).data = memory.at(memory_address).data;
+			cache.block_1.at(set).history = 1;
+
 		}
 	}
 
 
-	else if (cache.block_0.at(set).valid_bit == 0) {
-		cout << "Miss" << endl;
-		//read_miss();
-		//write from mem at block_0;
-
+	else if (cache.block_0.at(set).valid_bit == 0) {				//Case: block_0 [valid failed]
+		cout << "Read miss" << endl;
+		cache.block_0.at(set).valid_bit = 1;
+		cache.block_0.at(set).tag = tag;
+		cache.block_0.at(set).data = memory.at(memory_address).data;
+		cache.block_0.at(set).history = 1;
 	}
 
 	else {
