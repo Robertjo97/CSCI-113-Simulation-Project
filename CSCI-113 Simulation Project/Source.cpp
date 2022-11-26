@@ -1,5 +1,4 @@
 #include <iostream>
-#include <vector>
 #include <fstream>
 #include <string>
 
@@ -14,18 +13,8 @@ struct cache_block {
 };
 
 struct cache {
-	vector <cache_block> block_0;
-	vector <cache_block> block_1;
-};
-
-struct memory_block {
-	int address = 0;
-	int data = 0;
-};
-
-struct reg_block {
-	int name = 0;
-	int data = 0;
+	cache_block block_0[8];
+	cache_block block_1[8];
 };
 
 struct instruction {
@@ -62,39 +51,39 @@ int binaryToDecimal(int n)
 }
 
 
-void load_operation(int memory_address, int rt, vector<reg_block> regs, cache cache, vector <memory_block> memory) {
+void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, int (&memory)[128]) {
 
 	int set = memory_address % 8;
 	int tag = memory_address / 8;
 
-	if (cache.block_0.at(set).valid_bit == 1) {							//Case: block_0 [valid passed] [tag passed]
-		if (cache.block_0.at(set).tag == tag) {
-			regs.at(rt - 16).data = cache.block_0.at(set).data;
-			cache.block_0.at(set).history = 1;
-			cache.block_1.at(set).history = 0;
+	if (cache.block_0[set].valid_bit == 1) {							//Case: block_0 [valid passed] [tag passed]
+		if (cache.block_0[set].tag == tag) {
+			regs[rt - 16] = cache.block_0[set].data;
+			cache.block_0[set].history = 1;
+			cache.block_1[set].history = 0;
 			cout << "Read hit" << endl;
 		}
-		else if (cache.block_1.at(set).valid_bit == 1) {
-			if (cache.block_1.at(set).tag == tag) {						//Case: block_0 [valid passed] [tag failed] block_1 [valid passed] [tag passed]
+		else if (cache.block_1[set].valid_bit == 1) {
+			if (cache.block_1[set].tag == tag) {						//Case: block_0 [valid passed] [tag failed] block_1 [valid passed] [tag passed]
 				cout << "Read hit" << endl;
-				regs.at(rt - 16).data = cache.block_1.at(set).data;
-				cache.block_1.at(set).history = 1;
-				cache.block_0.at(set).history = 0;
+				regs[rt - 16] = cache.block_1[set].data;
+				cache.block_1[set].history = 1;
+				cache.block_0[set].history = 0;
 				//read_hit();
 			}
-			else if (cache.block_1.at(set).tag != tag) {						//Case: block_0 [valid passed] [tag failed] block_1 [valid passed] [tag failed]
+			else if (cache.block_1[set].tag != tag) {						//Case: block_0 [valid passed] [tag failed] block_1 [valid passed] [tag failed]
 				cout << "Read miss" << endl;
-				if (cache.block_0.at(set).history == 0) {
-					cache.block_0.at(set).tag = tag;
-					cache.block_0.at(set).data = memory.at(memory_address).data;
-					regs.at(rt - 16).data = cache.block_0.at(set).data;
-					cache.block_0.at(set).history = 1;
+				if (cache.block_0[set].history == 0) {
+					cache.block_0[set].tag = tag;
+					cache.block_0[set].data = memory[memory_address];
+					regs[rt - 16] = cache.block_0[set].data;
+					cache.block_0[set].history = 1;
 				}																	//LRU
-				else if (cache.block_1.at(set).history == 0) {
-					cache.block_1.at(set).tag = tag;
-					cache.block_1.at(set).data = memory.at(memory_address).data;
-					regs.at(rt - 16).data = cache.block_1.at(set).data;
-					cache.block_1.at(set).history = 1;
+				else if (cache.block_1[set].history == 0) {
+					cache.block_1[set].tag = tag;
+					cache.block_1[set].data = memory[memory_address];
+					regs[rt - 16] = cache.block_1[set].data;
+					cache.block_1[set].history = 1;
 				}
 				else {
 					cout << "Error reading history" << endl;
@@ -102,23 +91,24 @@ void load_operation(int memory_address, int rt, vector<reg_block> regs, cache ca
 			}
 		}
 
-			else if (cache.block_1.at(set).valid_bit == 0) {					//Case: block_0 [valid passed] [tag failed] block_1 [valid failed]
+			else if (cache.block_1[set].valid_bit == 0) {					//Case: block_0 [valid passed] [tag failed] block_1 [valid failed]
 			cout << "Read miss" << endl;
-			cache.block_1.at(set).valid_bit = 1;
-			cache.block_1.at(set).tag = tag;
-			cache.block_1.at(set).data = memory.at(memory_address).data;
-			cache.block_1.at(set).history = 1;
+			cache.block_1[set].valid_bit = 1;
+			cache.block_1[set].tag = tag;
+			cache.block_1[set].data = memory[memory_address];
+			cache.block_1[set].history = 1;
 
 		}
 	}
 
 
-	else if (cache.block_0.at(set).valid_bit == 0) {				//Case: block_0 [valid failed]
+	else if (cache.block_0[set].valid_bit == 0) {				//Case: block_0 [valid failed]
 		cout << "Read miss" << endl;
-		cache.block_0.at(set).valid_bit = 1;
-		cache.block_0.at(set).tag = tag;
-		cache.block_0.at(set).data = memory.at(memory_address).data;
-		cache.block_0.at(set).history = 1;
+		cache.block_0[set].valid_bit = 1;
+		cache.block_0[set].tag = tag;
+		cache.block_0[set].data = memory[memory_address];
+		cache.block_0[set].history = 1;
+		regs[rt - 16] = cache.block_0[set].data;
 	}
 
 	else {
@@ -126,15 +116,9 @@ void load_operation(int memory_address, int rt, vector<reg_block> regs, cache ca
 	}
 
 
-	/*cout << "Set: " << set << endl;
-	cout << "Tag: " << tag << endl;
-	cout << "Rt value: " << rt << endl;
-	cout << "Register:  " << "$S" << rt - 16 << endl;*/
-
-
 }
 
-void store_operation(int memory_address, int rt, vector<reg_block> regs, cache cache, vector <memory_block> memory) {
+void store_operation(int memory_address, int rt, int regs[8], cache cache, int memory[128]) {
 	int set = memory_address % 8;
 	int tag = memory_address / 8;
 	cout << "Set: " << set << endl;
@@ -143,10 +127,6 @@ void store_operation(int memory_address, int rt, vector<reg_block> regs, cache c
 	cout << "Register:  " << "$S" << rt - 16 << endl;
 }
 
-//void read_hit(); 
-//void read_miss();
-//void write_hit();  //WB
-//void write_miss(); //no-write-allocate
 
 instruction decode(string instr) {
 	instruction instruction_decoded;
@@ -180,7 +160,7 @@ instruction decode(string instr) {
 	return instruction_decoded;
 }
 
-void execute(instruction instr, vector<reg_block> regs, cache cache, vector <memory_block> memory) {
+void execute(instruction instr, int (&regs)[8], cache& cache, int (&memory)[128]) {
 
 	if (instr.op == 35) {
 		cout << "LW" << endl;
@@ -201,46 +181,20 @@ void execute(instruction instr, vector<reg_block> regs, cache cache, vector <mem
 
 
 int main() {
+	
 	cache cache;
-	cache.block_0.reserve(8);
-	cache.block_1.reserve(8);
-
 	for (int i = 0; i < 8; i++) {
-		cache_block block;
-		block.set = i;
-		cache.block_0.push_back(block);
-		cache.block_1.push_back(block);
+		cache.block_0[i].set = i;
+		cache.block_1[i].set = i;
 	}
 
-	/*for (int i = 0; i < cache.block_0.size(); i++) {
-		cout << cache.block_0.at(i).set << "    " << cache.block_0.at(i).valid_bit << "    " << cache.block_0.at(i).tag << "    " << cache.block_0.at(i).data << "          ";
-		cout << cache.block_1.at(i).set << "    " << cache.block_1.at(i).valid_bit << "    " << cache.block_1.at(i).tag << "    " << cache.block_1.at(i).data << "          " << endl;
-	}*/
-
-	vector <memory_block> memory;
-	memory.reserve(128);
+	int memory[128] = { };
 	for (int i = 0; i < 128; i++) {
-		memory_block memblock;
-		memblock.address = i;
-		memblock.data = i + 5;
-
-		memory.push_back(memblock);
+		memory[i] = i + 5;
 	}
-	/*for (int i = 0; i < memory.size(); i++) {
-		cout << memory.at(i).address << "    " << memory.at(i).data << endl;
-	}*/
 
-	vector <reg_block> reg_file;
-	reg_file.reserve(8);
-	for (int i = 0; i < 8; i++) {
-		reg_block block;
-		block.name = i;
-		reg_file.push_back(block);
-	}
-	/*for (int i = 0; i < reg_file.size(); i++) {
-		cout << "$S" << reg_file.at(i).name << "    " << reg_file.at(i).data << endl;
-	}*/
-
+	int reg_file[8] = { };
+	
 	string line;
 	ifstream file;
 	
@@ -250,10 +204,10 @@ int main() {
 		execute(decode(line), reg_file, cache, memory);
 	}
 
-	for (int i = 0; i < reg_file.size(); i++) {
+	for (int i = 0; i < 8; i++) {
 		cout << "Register Contents:" << endl;
-		cout << reg_file.at(i).data << endl;
+		cout << reg_file[i] << endl;
 	}
-
+	
 	return 0;
 }
