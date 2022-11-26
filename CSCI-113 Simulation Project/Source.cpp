@@ -250,5 +250,10 @@ int main() {
 		execute(decode(line), reg_file, cache, memory);
 	}
 
+	for (int i = 0; i < reg_file.size(); i++) {
+		cout << "Register Contents:" << endl;
+		cout << reg_file.at(i).data << endl;
+	}
+
 	return 0;
 }
