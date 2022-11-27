@@ -249,14 +249,16 @@ int main() {
 	file.open("02-Input-object-code");
 	while (!file.eof()) {
 		getline(file, line);
-		cout << line << endl;
+		cout << line;
 		execute(decode(line), reg_file, cache, memory);
 	}
 
-	for (int i = 0; i < 8; i++) {
+	/*for (int i = 0; i < 8; i++) {
 		cout << "Register Contents:" << endl;
 		cout << reg_file[i] << endl;
-	}
+	}*/
+	int n;
+	cin >> n;
 	
 	return 0;
 }
