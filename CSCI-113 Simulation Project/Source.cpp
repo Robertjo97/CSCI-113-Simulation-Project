@@ -30,6 +30,19 @@ int compute_mem_addr(instruction instr) {
 	//cout << "Word address: " << word_addr << endl;
 	return word_addr;
 }
+int conversion(int array[], int len) {
+	int output = 0;
+	int power = 1;
+
+	for (int i = 0; i < len; i++)
+	{
+		output += array[(len - 1) - i] * power;
+		// output goes 1*2^0 + 0*2^1 + 0*2^2 + ...
+		power *= 2;
+	}
+
+	return output;
+}
 
 int binaryToDecimal(int n)
 {
@@ -245,13 +258,28 @@ int main() {
 	
 	string line;
 	ifstream file;
-	
+	char instr[32];
+	int arr[32];
 	file.open("02-Input-object-code");
-	while (!file.eof()) {
+	getline(file, line);
+	for (int i = 0; i < 32; i++) {
+		arr[i] = line[i] - '0';
+	}
+	for (int i = 0; i < 32; i++) {
+		cout << arr[i];
+	}
+	cout << endl;
+	int op[16];
+	for (int i = 16; i < 32; i++) {
+		op[i - 16] = arr[i];
+	}
+	cout << conversion(op, 16);
+	
+	/*while (!file.eof()) {
 		getline(file, line);
 		cout << line;
 		execute(decode(line), reg_file, cache, memory);
-	}
+	}*/
 
 	/*for (int i = 0; i < 8; i++) {
 		cout << "Register Contents:" << endl;
