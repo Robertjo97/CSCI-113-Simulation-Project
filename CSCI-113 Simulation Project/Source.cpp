@@ -27,7 +27,7 @@ struct instruction {
 int compute_mem_addr(instruction instr) {
 	int byte_addr = instr.rs + instr.offset;
 	int word_addr = byte_addr / 4;
-	cout << "Word address: " << word_addr << endl;
+	//cout << "Word address: " << word_addr << endl;
 	return word_addr;
 }
 
@@ -61,18 +61,18 @@ void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, i
 			regs[rt - 16] = cache.block_0[set].data;
 			cache.block_0[set].history = 1;
 			cache.block_1[set].history = 0;
-			cout << "Read hit" << endl;
+			cout << "    Read hit";
 		}
 		else if (cache.block_1[set].valid_bit == 1) {
 			if (cache.block_1[set].tag == tag) {						//Case: block_0 [valid passed] [tag failed] block_1 [valid passed] [tag passed]
-				cout << "Read hit" << endl;
+				cout << "    Read hit";
 				regs[rt - 16] = cache.block_1[set].data;
 				cache.block_1[set].history = 1;
 				cache.block_0[set].history = 0;
-				//read_hit();
+				
 			}
 			else if (cache.block_1[set].tag != tag) {						//Case: block_0 [valid passed] [tag failed] block_1 [valid passed] [tag failed]
-				cout << "Read miss" << endl;
+				cout << "    Read miss";
 				if (cache.block_0[set].history == 0) {
 					cache.block_0[set].tag = tag;
 					cache.block_0[set].data = memory[memory_address];
@@ -88,33 +88,36 @@ void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, i
 					cache.block_0[set].history = 0;
 				}
 				else {
-					cout << "Error reading history" << endl;
+					cout << "    Error reading history";
 				}
 			}
 		}
 
 			else if (cache.block_1[set].valid_bit == 0) {					//Case: block_0 [valid passed] [tag failed] block_1 [valid failed]
-			cout << "Read miss" << endl;
+			cout << "    Read miss";
 			cache.block_1[set].valid_bit = 1;
 			cache.block_1[set].tag = tag;
 			cache.block_1[set].data = memory[memory_address];
+			regs[rt-16] = cache.block_1[set].data;
 			cache.block_1[set].history = 1;
+			cache.block_0[set].history = 0;
 
 		}
 	}
 
 
 	else if (cache.block_0[set].valid_bit == 0) {				//Case: block_0 [valid failed]
-		cout << "Read miss" << endl;
+		cout << "    Read miss";
 		cache.block_0[set].valid_bit = 1;
 		cache.block_0[set].tag = tag;
 		cache.block_0[set].data = memory[memory_address];
-		cache.block_0[set].history = 1;
 		regs[rt - 16] = cache.block_0[set].data;
+		cache.block_0[set].history = 1;
+		cache.block_1[set].history = 0;
 	}
 
 	else {
-		cout << "Error reading cache" << endl;
+		cout << "    Error reading cache";
 	}
 
 
@@ -123,10 +126,12 @@ void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, i
 void store_operation(int memory_address, int rt, int regs[8], cache cache, int memory[128]) {
 	int set = memory_address % 8;
 	int tag = memory_address / 8;
-	cout << "Set: " << set << endl;
+
+
+	/*cout << "Set: " << set << endl;
 	cout << "Tag: " << tag << endl;
 	cout << "Rt value: " << rt << endl;
-	cout << "Register:  " << "$S" << rt - 16 << endl;
+	cout << "Register:  " << "$S" << rt - 16 << endl;*/
 }
 
 
@@ -153,11 +158,11 @@ instruction decode(string instr) {
 	instruction_decoded.rt = binaryToDecimal(stoi(rt));
 	instruction_decoded.offset = binaryToDecimal(stoi(offset));
 
-	cout << instruction_decoded.op << endl;
-	cout << instruction_decoded.rs << endl;
-	cout << instruction_decoded.rt << endl;
-	cout << instruction_decoded.offset << endl;
-	//cout << endl;
+	//cout << instruction_decoded.op << endl;
+	//cout << instruction_decoded.rs << endl;
+	//cout << instruction_decoded.rt << endl;
+	//cout << instruction_decoded.offset << endl;
+	////cout << endl;
 
 	return instruction_decoded;
 }
@@ -165,12 +170,12 @@ instruction decode(string instr) {
 void execute(instruction instr, int (&regs)[8], cache& cache, int (&memory)[128]) {
 
 	if (instr.op == 35) {
-		cout << "LW" << endl;
+		//cout << "LW";
 		load_operation(compute_mem_addr(instr), instr.rt, regs, cache, memory);
 
 	}
 	else if (instr.op == 43) {
-		cout << "SW" << endl;
+		//cout << "SW";
 		store_operation(compute_mem_addr(instr), instr.rt, regs, cache, memory);
 	}
 	else {
@@ -203,13 +208,14 @@ int main() {
 	file.open("02-Input-object-code");
 	while (!file.eof()) {
 		getline(file, line);
+		cout << line;
 		execute(decode(line), reg_file, cache, memory);
 	}
 
-	for (int i = 0; i < 8; i++) {
+	/*for (int i = 0; i < 8; i++) {
 		cout << "Register Contents:" << endl;
 		cout << reg_file[i] << endl;
-	}
+	}*/
 	
 	return 0;
 }
