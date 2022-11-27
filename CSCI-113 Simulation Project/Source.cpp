@@ -191,32 +191,33 @@ void store_operation(int memory_address, int& rt, int(&regs)[8], cache& cache, i
 
 instruction decode(string instr) {
 	instruction instruction_decoded;
-	string op = "";
-	string rs = "";
-	string rt = "";
-	string offset = "";
+	int op[6] = { };
+	int rs[5] = { };
+	int rt[5] = { };
+	int offset[16] = { };
+	
 	for (int i = 0; i < 6; i++) {
-		op += instr.at(i);
+		op[i] = instr[i] - '0';
 	}
 	for (int i = 6; i < 11; i++) {
-		rs += instr.at(i);
+		rs[i - 6] = instr[i] - '0';
 	}
 	for (int i = 11; i < 16; i++) {
-		rt += instr.at(i);
+		rt[i - 11] = instr[i] - '0';
 	}
 	for (int i = 16; i < 32; i++) {
-		offset += instr.at(i);
+		offset[i - 16] = instr[i] - '0';
 	}
-	instruction_decoded.op = binaryToDecimal(stoi(op));
-	instruction_decoded.rs = binaryToDecimal(stoi(rs));
-	instruction_decoded.rt = binaryToDecimal(stoi(rt));
-	instruction_decoded.offset = binaryToDecimal(stoi(offset));
+	instruction_decoded.op = conversion(op, 6);
+	instruction_decoded.rs = conversion(rs, 5);
+	instruction_decoded.rt = conversion(rt, 5);
+	instruction_decoded.offset = conversion(offset, 16);
 
-	//cout << instruction_decoded.op << endl;
-	//cout << instruction_decoded.rs << endl;
-	//cout << instruction_decoded.rt << endl;
-	//cout << instruction_decoded.offset << endl;
-	////cout << endl;
+	/*cout << instruction_decoded.op << endl;
+	cout << instruction_decoded.rs << endl;
+	cout << instruction_decoded.rt << endl;
+	cout << instruction_decoded.offset << endl;
+	cout << endl;*/
 
 	return instruction_decoded;
 }
@@ -261,30 +262,18 @@ int main() {
 	char instr[32];
 	int arr[32];
 	file.open("02-Input-object-code");
-	getline(file, line);
-	for (int i = 0; i < 32; i++) {
-		arr[i] = line[i] - '0';
-	}
-	for (int i = 0; i < 32; i++) {
-		cout << arr[i];
-	}
-	cout << endl;
-	int op[16];
-	for (int i = 16; i < 32; i++) {
-		op[i - 16] = arr[i];
-	}
-	cout << conversion(op, 16);
+
 	
-	/*while (!file.eof()) {
+	while (!file.eof()) {
 		getline(file, line);
 		cout << line;
 		execute(decode(line), reg_file, cache, memory);
-	}*/
+	}
 
-	/*for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 8; i++) {
 		cout << "Register Contents:" << endl;
 		cout << reg_file[i] << endl;
-	}*/
+	}
 	int n;
 	cin >> n;
 	
