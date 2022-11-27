@@ -78,12 +78,14 @@ void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, i
 					cache.block_0[set].data = memory[memory_address];
 					regs[rt - 16] = cache.block_0[set].data;
 					cache.block_0[set].history = 1;
+					cache.block_1[set].history = 0;
 				}																	//LRU
 				else if (cache.block_1[set].history == 0) {
 					cache.block_1[set].tag = tag;
 					cache.block_1[set].data = memory[memory_address];
 					regs[rt - 16] = cache.block_1[set].data;
 					cache.block_1[set].history = 1;
+					cache.block_0[set].history = 0;
 				}
 				else {
 					cout << "Error reading history" << endl;
