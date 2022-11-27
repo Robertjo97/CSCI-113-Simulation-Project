@@ -127,11 +127,9 @@ void store_operation(int memory_address, int rt, int regs[8], cache cache, int m
 	int set = memory_address % 8;
 	int tag = memory_address / 8;
 
-
-	/*cout << "Set: " << set << endl;
-	cout << "Tag: " << tag << endl;
-	cout << "Rt value: " << rt << endl;
-	cout << "Register:  " << "$S" << rt - 16 << endl;*/
+	if {
+		
+	}
 }
 
 
