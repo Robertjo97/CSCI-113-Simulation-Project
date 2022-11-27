@@ -61,18 +61,18 @@ void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, i
 			regs[rt - 16] = cache.block_0[set].data;
 			cache.block_0[set].history = 1;
 			cache.block_1[set].history = 0;
-			cout << "    Read hit";
+			cout << "\tRead hit";
 		}
 		else if (cache.block_1[set].valid_bit == 1) {
 			if (cache.block_1[set].tag == tag) {						//Case: block_0 [valid passed] [tag failed] block_1 [valid passed] [tag passed]
-				cout << "    Read hit";
+				cout << "\tRead hit";
 				regs[rt - 16] = cache.block_1[set].data;
 				cache.block_1[set].history = 1;
 				cache.block_0[set].history = 0;
 				
 			}
 			else if (cache.block_1[set].tag != tag) {						//Case: block_0 [valid passed] [tag failed] block_1 [valid passed] [tag failed]
-				cout << "    Read miss";
+				cout << "\tRead miss LRU";
 				if (cache.block_0[set].history == 0) {
 					cache.block_0[set].tag = tag;
 					cache.block_0[set].data = memory[memory_address];
@@ -88,13 +88,13 @@ void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, i
 					cache.block_0[set].history = 0;
 				}
 				else {
-					cout << "    Error reading history";
+					cout << "\tError reading history";
 				}
 			}
 		}
 
 			else if (cache.block_1[set].valid_bit == 0) {					//Case: block_0 [valid passed] [tag failed] block_1 [valid failed]
-			cout << "    Read miss";
+			cout << "\tRead miss";
 			cache.block_1[set].valid_bit = 1;
 			cache.block_1[set].tag = tag;
 			cache.block_1[set].data = memory[memory_address];
@@ -107,7 +107,7 @@ void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, i
 
 
 	else if (cache.block_0[set].valid_bit == 0) {				//Case: block_0 [valid failed]
-		cout << "    Read miss";
+		cout << "\tRead miss";
 		cache.block_0[set].valid_bit = 1;
 		cache.block_0[set].tag = tag;
 		cache.block_0[set].data = memory[memory_address];
@@ -117,18 +117,61 @@ void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, i
 	}
 
 	else {
-		cout << "    Error reading cache";
+		cout << "\tError reading cache";
 	}
 
 
 }
 
-void store_operation(int memory_address, int rt, int regs[8], cache cache, int memory[128]) {
+void store_operation(int memory_address, int& rt, int(&regs)[8], cache& cache, int(&memory)[128]) {
 	int set = memory_address % 8;
 	int tag = memory_address / 8;
 
-	if {
-		
+	if (cache.block_0[set].valid_bit == 1) {					//block_0 [valid passed] [tag passed]
+		if (cache.block_0[set].tag == tag) {
+			cout << "\tWrite hit";
+			cache.block_0[set].data = regs[rt - 16];
+			cache.block_0[set].history = 1;
+			cache.block_1[set].history = 0;
+		}
+		else if (cache.block_1[set].valid_bit == 1) {			//block_0 [valid passed] [tag failed] block_1 [valid passed] [tag passed]
+			if (cache.block_1[set].tag == tag) {
+				cout << "\tWrite hit";
+				cache.block_1[set].data = regs[rt - 16];
+				cache.block_1[set].history = 1;
+				cache.block_0[set].history = 0;
+			}
+			else if (cache.block_1[set].tag != tag) {			//block_0 [valid passed] [tag failed] block_1 [valid passed] [tag failed]
+				//LRU WB stuff
+				cout << "\tWrite hit WB";
+				if (cache.block_0[set].history == 0) {
+					memory[memory_address] = cache.block_0[set].data;
+					cache.block_0[set].data = regs[rt - 16];
+					cache.block_0[set].history = 1;
+					cache.block_1[set].history = 0;
+				}
+				else if (cache.block_1[set].history == 0) {
+					memory[memory_address] = cache.block_1[set].data;
+					cache.block_1[set].data = regs[rt - 16];
+					cache.block_1[set].history = 1;
+					cache.block_0[set].history = 0;
+				}
+				else {
+					cout << "\tError reading history";
+				}
+			}
+		}
+		else if (cache.block_1[set].valid_bit == 0) {			//block_0 [valid passed] [tag failed] block_1 [valid failed]
+			cout << "\tWrite miss";
+			memory[memory_address] = regs[rt - 16];
+		}	
+	}
+	else if (cache.block_0[set].valid_bit == 0) {				//block_0 [valid failed]
+		cout << "\tWrite miss";
+		memory[memory_address] = regs[rt - 16];
+	}
+	else {
+		cout << "\tError writing";
 	}
 }
 
@@ -206,14 +249,14 @@ int main() {
 	file.open("02-Input-object-code");
 	while (!file.eof()) {
 		getline(file, line);
-		cout << line;
+		cout << line << endl;
 		execute(decode(line), reg_file, cache, memory);
 	}
 
-	/*for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 8; i++) {
 		cout << "Register Contents:" << endl;
 		cout << reg_file[i] << endl;
-	}*/
+	}
 	
 	return 0;
 }
