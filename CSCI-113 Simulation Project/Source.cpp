@@ -44,26 +44,6 @@ int conversion(int array[], int len) {
 	return output;
 }
 
-int binaryToDecimal(int n)
-{
-	int num = n;
-	int dec_value = 0;
-	int base = 1;
-
-	int temp = num;
-	while (temp) {
-		int last_digit = temp % 10;
-		temp = temp / 10;
-
-		dec_value += last_digit * base;
-
-		base = base * 2;
-	}
-
-	return dec_value;
-}
-
-
 void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, int (&memory)[128]) {
 
 	int set = memory_address % 8;
@@ -212,12 +192,6 @@ instruction decode(string instr) {
 	instruction_decoded.rs = conversion(rs, 5);
 	instruction_decoded.rt = conversion(rt, 5);
 	instruction_decoded.offset = conversion(offset, 16);
-
-	/*cout << instruction_decoded.op << endl;
-	cout << instruction_decoded.rs << endl;
-	cout << instruction_decoded.rt << endl;
-	cout << instruction_decoded.offset << endl;
-	cout << endl;*/
 
 	return instruction_decoded;
 }
