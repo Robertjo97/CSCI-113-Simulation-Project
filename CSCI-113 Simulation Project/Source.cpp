@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <bitset>
 
 using namespace std;
 
@@ -28,7 +27,6 @@ struct instruction {
 int compute_mem_addr(instruction instr) {
 	int byte_addr = instr.rs + instr.offset;
 	int word_addr = byte_addr / 4;
-	//cout << "Word address: " << word_addr << endl;
 	return word_addr;
 }
 int conversion(int array[], int len) {
@@ -232,8 +230,7 @@ int main() {
 	
 	string line;
 	ifstream file;
-	char instr[32];
-	int arr[32];
+
 	file.open("02-Input-object-code");
 
 	
@@ -246,6 +243,12 @@ int main() {
 	cout << endl << "Register Contents:" << endl;
 	for (int i = 0; i < 8; i++) {
 		cout << "$S" << i << "\t" << reg_file[i] << endl;
+	}
+	cout << endl << "Cache Block 0\t\t\t\t\t\tCache Block 1 " << endl;
+	cout << "Set#\tValid\tTag\tData\t\t\t\tSet#\tValid\tTag\tData" << endl;
+	for (int i = 0; i < 8; i++) {
+		cout << cache.block_0[i].set << "\t" << cache.block_0[i].valid_bit << "\t" << cache.block_0[i].tag << "\t" << cache.block_0[i].data;
+		cout <<"\t\t\t\t" << cache.block_1[i].set << "\t" << cache.block_1[i].valid_bit << "\t" << cache.block_1[i].tag << "\t" << cache.block_1[i].data << endl;
 	}
 	
 	return 0;
