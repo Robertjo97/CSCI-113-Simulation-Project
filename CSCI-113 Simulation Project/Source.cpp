@@ -197,7 +197,6 @@ instruction decode(string instr) {
 }
 
 void execute(instruction instr, int (&regs)[8], cache& cache, int (&memory)[128]) {
-
 	if (instr.op == 35) {
 		//cout << "LW";
 		load_operation(compute_mem_addr(instr), instr.rt, regs, cache, memory);
@@ -240,16 +239,13 @@ int main() {
 	
 	while (!file.eof()) {
 		getline(file, line);
-		cout << line;
+		cout << line << endl;
 		execute(decode(line), reg_file, cache, memory);
 	}
-
+	cout << endl << "Register Contents:" << endl;
 	for (int i = 0; i < 8; i++) {
-		cout << "Register Contents:" << endl;
-		cout << reg_file[i] << endl;
+		cout << "$S" << i << "\t" << reg_file[i] << endl;
 	}
-	int n;
-	cin >> n;
 	
 	return 0;
 }
