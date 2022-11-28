@@ -42,6 +42,63 @@ int conversion(int array[], int len) {
 	return output;
 }
 
+void FourBitBin(int n)
+{
+	// array to store binary number
+	int binaryNum[32] = { };
+
+	// counter for binary array
+	int i = 0;
+	while (n > 0) {
+
+		// storing remainder in binary array
+		binaryNum[i] = n % 2;
+		n = n / 2;
+		i++;
+	}
+	// printing binary array in reverse order
+	for (int j = 3; j >= 0; j--)
+		cout << binaryNum[j];
+}
+
+void ThirtyTwoBitBin(int n)
+{
+	// array to store binary number
+	int binaryNum[32] = { };
+
+	// counter for binary array
+	int i = 0;
+	while (n > 0) {
+
+		// storing remainder in binary array
+		binaryNum[i] = n % 2;
+		n = n / 2;
+		i++;
+	}
+	// printing binary array in reverse order
+	for (int j = 31; j >= 0; j--)
+		cout << binaryNum[j];
+}
+
+void SevenBitBin(int n)
+{
+	// array to store binary number
+	int binaryNum[32] = { };
+
+	// counter for binary array
+	int i = 0;
+	while (n > 0) {
+
+		// storing remainder in binary array
+		binaryNum[i] = n % 2;
+		n = n / 2;
+		i++;
+	}
+	// printing binary array in reverse order
+	for (int j = 6; j >= 0; j--)
+		cout << binaryNum[j];
+}
+
 void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, int (&memory)[128]) {
 
 	int set = memory_address % 8;
@@ -52,18 +109,18 @@ void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, i
 			regs[rt - 16] = cache.block_0[set].data;
 			cache.block_0[set].history = 1;
 			cache.block_1[set].history = 0;
-			cout << "\tRead hit";
+			cout << "\thit";
 		}
 		else if (cache.block_1[set].valid_bit == 1) {
 			if (cache.block_1[set].tag == tag) {						//Case: block_0 [valid passed] [tag failed] block_1 [valid passed] [tag passed]
-				cout << "\tRead hit";
+				cout << "\thit";
 				regs[rt - 16] = cache.block_1[set].data;
 				cache.block_1[set].history = 1;
 				cache.block_0[set].history = 0;
 				
 			}
 			else if (cache.block_1[set].tag != tag) {						//Case: block_0 [valid passed] [tag failed] block_1 [valid passed] [tag failed]
-				cout << "\tRead miss LRU";
+				cout << "\tmiss";
 				if (cache.block_0[set].history == 0) {
 					cache.block_0[set].tag = tag;
 					cache.block_0[set].data = memory[memory_address];
@@ -85,7 +142,7 @@ void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, i
 		}
 
 			else if (cache.block_1[set].valid_bit == 0) {					//Case: block_0 [valid passed] [tag failed] block_1 [valid failed]
-			cout << "\tRead miss";
+			cout << "\tmiss";
 			cache.block_1[set].valid_bit = 1;
 			cache.block_1[set].tag = tag;
 			cache.block_1[set].data = memory[memory_address];
@@ -98,7 +155,7 @@ void load_operation(int memory_address, int &rt, int (&regs)[8], cache& cache, i
 
 
 	else if (cache.block_0[set].valid_bit == 0) {				//Case: block_0 [valid failed]
-		cout << "\tRead miss";
+		cout << "\tmiss";
 		cache.block_0[set].valid_bit = 1;
 		cache.block_0[set].tag = tag;
 		cache.block_0[set].data = memory[memory_address];
@@ -120,21 +177,21 @@ void store_operation(int memory_address, int& rt, int(&regs)[8], cache& cache, i
 
 	if (cache.block_0[set].valid_bit == 1) {					//block_0 [valid passed] [tag passed]
 		if (cache.block_0[set].tag == tag) {
-			cout << "\tWrite hit";
+			cout << "\thit";
 			cache.block_0[set].data = regs[rt - 16];
 			cache.block_0[set].history = 1;
 			cache.block_1[set].history = 0;
 		}
 		else if (cache.block_1[set].valid_bit == 1) {			//block_0 [valid passed] [tag failed] block_1 [valid passed] [tag passed]
 			if (cache.block_1[set].tag == tag) {
-				cout << "\tWrite hit";
+				cout << "\thit";
 				cache.block_1[set].data = regs[rt - 16];
 				cache.block_1[set].history = 1;
 				cache.block_0[set].history = 0;
 			}
 			else if (cache.block_1[set].tag != tag) {			//block_0 [valid passed] [tag failed] block_1 [valid passed] [tag failed]
 				//LRU WB stuff
-				cout << "\tWrite hit WB";
+				cout << "\thit";
 				if (cache.block_0[set].history == 0) {
 					memory[memory_address] = cache.block_0[set].data;
 					cache.block_0[set].data = regs[rt - 16];
@@ -153,12 +210,12 @@ void store_operation(int memory_address, int& rt, int(&regs)[8], cache& cache, i
 			}
 		}
 		else if (cache.block_1[set].valid_bit == 0) {			//block_0 [valid passed] [tag failed] block_1 [valid failed]
-			cout << "\tWrite miss";
+			cout << "\tmiss";
 			memory[memory_address] = regs[rt - 16];
 		}	
 	}
 	else if (cache.block_0[set].valid_bit == 0) {				//block_0 [valid failed]
-		cout << "\tWrite miss";
+		cout << "\tmiss";
 		memory[memory_address] = regs[rt - 16];
 	}
 	else {
@@ -240,16 +297,29 @@ int main() {
 		execute(decode(line), reg_file, cache, memory);
 		cout << "--------------------------------" << endl;
 	}
-	cout << endl << "Register Contents:" << endl;
+	
+	cout << endl << "Registers" << endl;
 	for (int i = 0; i < 8; i++) {
-		cout << "$S" << i << "\t" << reg_file[i] << endl;
-	}
-	cout << endl << "Cache Block 0\t\t\t\t\t\tCache Block 1 " << endl;
-	cout << "Set#\tValid\tTag\tData\t\t\t\tSet#\tValid\tTag\tData" << endl;
-	for (int i = 0; i < 8; i++) {
-		cout << cache.block_0[i].set << "\t" << cache.block_0[i].valid_bit << "\t" << cache.block_0[i].tag << "\t" << cache.block_0[i].data;
-		cout <<"\t\t\t\t" << cache.block_1[i].set << "\t" << cache.block_1[i].valid_bit << "\t" << cache.block_1[i].tag << "\t" << cache.block_1[i].data << endl;
+		cout << "$S" << i << "\t"; 
+		ThirtyTwoBitBin(reg_file[i]);
+		cout << endl;
 	}
 	
+	cout << endl << "Cache Block 0\t\t\t\t\t\t\tCache Block 1 " << endl;
+	cout << "Set#\tValid\tTag\tData\t\t\t\t\tSet#\tValid\tTag\tData" << endl;
+	for (int i = 0; i < 8; i++) {
+		cout << cache.block_0[i].set << "\t" << cache.block_0[i].valid_bit << "\t"; FourBitBin(cache.block_0[i].tag); cout << "\t"; ThirtyTwoBitBin(cache.block_0[i].data);
+		cout << "\t" << cache.block_1[i].set << "\t" << cache.block_1[i].valid_bit << "\t"; FourBitBin(cache.block_1[i].tag); cout << "\t"; ThirtyTwoBitBin(cache.block_1[i].data);
+		cout << endl;
+	}
+	
+	cout << endl << "Memory" << endl;
+	cout << "Address\t\tData" << endl;
+	for (int i = 0; i < 128; i++) {
+		SevenBitBin(i);
+		cout << "\t\t";
+		ThirtyTwoBitBin(memory[i]);
+		cout << endl;
+	}
 	return 0;
 }
