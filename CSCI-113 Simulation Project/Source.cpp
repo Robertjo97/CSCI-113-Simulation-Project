@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <bitset>
 
 using namespace std;
 
@@ -37,7 +38,6 @@ int conversion(int array[], int len) {
 	for (int i = 0; i < len; i++)
 	{
 		output += array[(len - 1) - i] * power;
-		// output goes 1*2^0 + 0*2^1 + 0*2^2 + ...
 		power *= 2;
 	}
 
@@ -241,6 +241,7 @@ int main() {
 		getline(file, line);
 		cout << line << endl;
 		execute(decode(line), reg_file, cache, memory);
+		cout << "--------------------------------" << endl;
 	}
 	cout << endl << "Register Contents:" << endl;
 	for (int i = 0; i < 8; i++) {
