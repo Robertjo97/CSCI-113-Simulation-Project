@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a project I created for my Computer Architecture class at California State Univeristy Fresno. It is a C++ program that simulates the behavior of a memory hierarchy, including registers, cache, and main memory. This simulation is designed to work with a specific set of machine instructions and provides insight into how memory operations are handled by the cache and the overall system.
+This is a project I created for my Computer Architecture class at California State Univeristy, Fresno. It is a C++ program that simulates the behavior of a memory hierarchy, including registers, cache, and main memory. This simulation is designed to work with a specific set of machine instructions and provides insight into how memory operations are handled by the cache and the overall system.
 
 ## Project Structure
 
