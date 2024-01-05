@@ -1,4 +1,4 @@
-# Memory Simulation Project Readme
+# Memory Simulation Project
 
 ## Overview
 
